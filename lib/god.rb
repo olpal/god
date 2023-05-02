@@ -85,13 +85,17 @@ end
 
 require 'god/contact'
 load_contact(:campfire)
+load_contact(:hipchat)
 load_contact(:email)
 load_contact(:jabber)
 load_contact(:prowl)
 load_contact(:scout)
+load_contact(:statsd)
 load_contact(:twitter)
 load_contact(:webhook)
 load_contact(:airbrake)
+load_contact(:slack)
+load_contact(:sensu)
 
 $:.unshift File.join(File.dirname(__FILE__), *%w[.. ext god])
 
@@ -157,7 +161,7 @@ end
 
 module God
   # The String version number for this package.
-  VERSION = '0.13.3'
+  VERSION = '0.13.7'
 
   # The Integer number of lines of backlog to keep for the logger.
   LOG_BUFFER_SIZE_DEFAULT = 100
@@ -486,8 +490,8 @@ module God
   def self.stop_all
     self.watches.sort.each do |name, w|
       Thread.new do
+        w.action(:stop)
         w.unmonitor if w.state != :unmonitored
-        w.action(:stop) if w.alive?
       end
     end
 
